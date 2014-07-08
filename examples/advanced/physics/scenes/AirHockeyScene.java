@@ -61,24 +61,11 @@ public class AirHockeyScene extends AbstractScene {
     private int scorePlayer1;
     private int scorePlayer2;
     private HockeyBall ball;
-    /*
-    private Minim minim;
-    private AudioSnippet wallHit;
-    private AudioSample paddleBallClash;
-    private AudioSnippet goalHit;
-    private AudioSnippet paddleHit;
-    */
     private Paddle redCircle;
     private Paddle blueCircle;
 
     private boolean enableSound = true;
 
-
-    //TODO sometimes goal not recognized when shot at fast
-    //TODO after goal reset puck and make 3 second countdown -> dont use physics until countdown up!
-    //TODO get graphics, sounds, effects
-
-    //	private String imagesPath = System.getProperty("user.dir") + File.separator + "examples" + File.separator +"advanced"+ File.separator +  "physics"  + File.separator + "data" +  File.separator  + "images" +  File.separator;
     private String imagesPath = "advanced" + MTApplication.separator + "physics" + MTApplication.separator + "data" + MTApplication.separator + "images" + MTApplication.separator;
 
 
@@ -192,18 +179,6 @@ public class AirHockeyScene extends AbstractScene {
 
         //Set up check for collisions between objects
         this.addWorldContactListener(world);
-
-		/*
-        //Sound
-		if (enableSound){
-			minim = new Minim(mtApplication);
-			wallHit = minim.loadSnippet(MT4jSettings.getInstance().getDataFolderPath() + "sound" + File.separator + "paddleBallHit.wav");
-//			paddleBallClash = minim.loadSample(MT4jSettings.getInstance().getDataFolderPath() + "sound" + File.separator + "paddleBallHit.wav", 2048);
-//			goalHit = minim.loadSnippet(MT4jSettings.getInstance().getDataFolderPath() + "sound" + File.separator + "goal.wav");
-//			goalHit.play();
-			paddleHit = minim.loadSnippet(MT4jSettings.getInstance().getDataFolderPath() + "sound" + File.separator + "wallHit.wav");
-		}
-		*/
     }
 
     private void createGoals(MTApplication mtApplication) {
@@ -442,12 +417,6 @@ public class AirHockeyScene extends AbstractScene {
 
                         if (ball != null) {
                             //CHECK IF BALL HIT A PADDLE
-                            if (enableSound && (bluePuck != null || redPuck != null)) {
-//								System.out.println("PUCK HIT BALL!");
-								/*
-								triggerSound(paddleHit);
-								*/
-                            }
 
 
                             //Check if BALL HIT A GOAL
@@ -463,8 +432,6 @@ public class AirHockeyScene extends AbstractScene {
 
                                 //Update scores
                                 updateScores();
-                                //Play goal sound
-//								triggerSound(goalHit);
 
                                 if (scorePlayer1 >= 15 || scorePlayer2 >= 15) {
                                     reset();
@@ -503,16 +470,6 @@ public class AirHockeyScene extends AbstractScene {
             }
         });
     }
-	
-	/*
-	private void triggerSound(AudioSnippet snippet){
-		if (!snippet.isPlaying()){
-			snippet.pause();
-			snippet.rewind();
-			snippet.play();
-		}
-	}
-	*/
 
     private MTComponent isHit(String componentName, MTComponent comp1, MTComponent comp2) {
         MTComponent hitComp = null;
