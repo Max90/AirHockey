@@ -70,7 +70,6 @@ public class AirHockeyScene extends AbstractScene {
     */
     private Paddle redCircle;
     private Paddle blueCircle;
-    private Paddle blueCircle2;
 
     private boolean enableSound = true;
 
@@ -139,58 +138,10 @@ public class AirHockeyScene extends AbstractScene {
         centerCircleInner.setStrokeColor(new MTColor(150, 150, 150));
         centerCircleInner.setStrokeWeight(0.5f);
         physicsContainer.addChild(centerCircleInner);
+        createPaddles(mtApplication);
+        createBalls(mtApplication);
+        createGoals(mtApplication);
 
-        //Create the paddles
-        PImage paddleTex = mtApplication.loadImage(imagesPath + "paddle.png");
-        redCircle = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        redCircle.setTexture(paddleTex);
-        redCircle.setFillColor(new MTColor(255, 50, 50));
-        redCircle.setNoStroke(true);
-        redCircle.setName("red");
-        redCircle.setPickable(false);
-        physicsContainer.addChild(redCircle);
-
-        blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        blueCircle.setTexture(paddleTex);
-        blueCircle.setFillColor(new MTColor(50, 50, 255));
-        blueCircle.setNoStroke(true);
-        blueCircle.setName("blue");
-        blueCircle.setPickable(false);
-        physicsContainer.addChild(blueCircle);
-
-        blueCircle2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        blueCircle2.setTexture(paddleTex);
-        blueCircle2.setFillColor(new MTColor(50, 50, 255));
-        blueCircle2.setNoStroke(true);
-        blueCircle2.setName("blue");
-        blueCircle2.setPickable(false);
-        physicsContainer.addChild(blueCircle2);
-
-        //Create the ball
-        ball = new HockeyBall(app, new Vector3D(mtApplication.width / 2f, mtApplication.height / 2f), 38, world, 0.5f, 0.005f, 0.70f, scale);
-//		MTColor ballCol = new MTColor(0,255,0);
-//		ball.setFillColor(ballCol);
-        PImage ballTex = mtApplication.loadImage(imagesPath + "puk.png");
-        ball.setTexture(ballTex);
-//		ball.setFillColor(new MTColor(160,160,160,255));
-        ball.setFillColor(new MTColor(255, 255, 255, 255));
-        ball.setNoStroke(true);
-        ball.setName("ball");
-        physicsContainer.addChild(ball);
-        ball.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8), ToolsMath.getRandom(-8, 8)), ball.getBody().getWorldCenter());
-
-        //Create the GOALS
-        HockeyGoal goal1 = new HockeyGoal(new Vector3D(0, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
-        goal1.setName("goal1");
-        goal1.setFillColor(new MTColor(0, 0, 255));
-        goal1.setStrokeColor(new MTColor(0, 0, 255));
-        physicsContainer.addChild(goal1);
-
-        HockeyGoal goal2 = new HockeyGoal(new Vector3D(mtApplication.width, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
-        goal2.setName("goal2");
-        goal2.setFillColor(new MTColor(255, 0, 0));
-        goal2.setStrokeColor(new MTColor(255, 0, 0));
-        physicsContainer.addChild(goal2);
 
         //Make two components for both game field sides to drag the puks upon
         MTRectangle leftSide = new MTRectangle(
@@ -204,7 +155,6 @@ public class AirHockeyScene extends AbstractScene {
         leftSide.removeAllGestureEventListeners(DragProcessor.class);
         leftSide.registerInputProcessor(new DragProcessor(app));
         leftSide.addGestureListener(DragProcessor.class, new GameFieldHalfDragListener(blueCircle));
-        leftSide.addGestureListener(DragProcessor.class, new GameFieldHalfDragListener(blueCircle2));
         physicsContainer.addChild(0, leftSide);
         MTRectangle rightSide = new MTRectangle(
                 PhysicsHelper.scaleDown(app.width / 2f, scale), PhysicsHelper.scaleDown(0, scale),
@@ -254,6 +204,56 @@ public class AirHockeyScene extends AbstractScene {
 			paddleHit = minim.loadSnippet(MT4jSettings.getInstance().getDataFolderPath() + "sound" + File.separator + "wallHit.wav");
 		}
 		*/
+    }
+
+    private void createGoals(MTApplication mtApplication) {
+        //Create the GOALS
+        HockeyGoal goal1 = new HockeyGoal(new Vector3D(0, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal1.setName("goal1");
+        goal1.setFillColor(new MTColor(0, 0, 255));
+        goal1.setStrokeColor(new MTColor(0, 0, 255));
+        physicsContainer.addChild(goal1);
+
+        HockeyGoal goal2 = new HockeyGoal(new Vector3D(mtApplication.width, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal2.setName("goal2");
+        goal2.setFillColor(new MTColor(255, 0, 0));
+        goal2.setStrokeColor(new MTColor(255, 0, 0));
+        physicsContainer.addChild(goal2);
+    }
+
+    private void createBalls(MTApplication mtApplication) {
+        //Create the ball
+        ball = new HockeyBall(app, new Vector3D(mtApplication.width / 2f, mtApplication.height / 2f), 38, world, 0.5f, 0.005f, 0.70f, scale);
+//		MTColor ballCol = new MTColor(0,255,0);
+//		ball.setFillColor(ballCol);
+        PImage ballTex = mtApplication.loadImage(imagesPath + "puk.png");
+        ball.setTexture(ballTex);
+//		ball.setFillColor(new MTColor(160,160,160,255));
+        ball.setFillColor(new MTColor(255, 255, 255, 255));
+        ball.setNoStroke(true);
+        ball.setName("ball");
+        physicsContainer.addChild(ball);
+        ball.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8), ToolsMath.getRandom(-8, 8)), ball.getBody().getWorldCenter());
+    }
+
+    private void createPaddles(MTApplication mtApplication) {
+        //Create the paddles
+        PImage paddleTex = mtApplication.loadImage(imagesPath + "paddle.png");
+        redCircle = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        redCircle.setTexture(paddleTex);
+        redCircle.setFillColor(new MTColor(255, 50, 50));
+        redCircle.setNoStroke(true);
+        redCircle.setName("red");
+        redCircle.setPickable(false);
+        physicsContainer.addChild(redCircle);
+
+        blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        blueCircle.setTexture(paddleTex);
+        blueCircle.setFillColor(new MTColor(50, 50, 255));
+        blueCircle.setNoStroke(true);
+        blueCircle.setName("blue");
+        blueCircle.setPickable(false);
+        physicsContainer.addChild(blueCircle);
     }
 
 
