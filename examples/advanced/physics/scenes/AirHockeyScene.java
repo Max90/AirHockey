@@ -2,6 +2,7 @@ package advanced.physics.scenes;
 
 import java.awt.event.KeyEvent;
 
+import advanced.physics.physicsShapes.PhysicsEllipse;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.shapes.CircleDef;
 import org.jbox2d.collision.shapes.PolygonDef;
@@ -61,8 +62,13 @@ public class AirHockeyScene extends AbstractScene {
     private int scorePlayer1;
     private int scorePlayer2;
     private HockeyBall ball;
+    private HockeyBall ball2;
     private Paddle redCircle;
     private Paddle blueCircle;
+    private Paddle redCircle2;
+    private Paddle blueCircle2;
+    private Bumper bumperRed;
+    private Bumper bumperBlue;
 
     private boolean enableSound = true;
 
@@ -128,6 +134,7 @@ public class AirHockeyScene extends AbstractScene {
         createPaddles(mtApplication);
         createBalls(mtApplication);
         createGoals(mtApplication);
+        createBumpers(mtApplication);
 
 
         //Make two components for both game field sides to drag the puks upon
@@ -166,14 +173,14 @@ public class AirHockeyScene extends AbstractScene {
         t1.setPickable(false);
         t1.setNoFill(true);
         t1.setNoStroke(true);
-        t1.setPositionGlobal(new Vector3D(5, 30, 0));
+        t1.setPositionGlobal(new Vector3D(200, 30, 0));
         uiLayer.addChild(t1);
 
         t2 = new MTTextArea(mtApplication, font);
         t2.setPickable(false);
         t2.setNoFill(true);
         t2.setNoStroke(true);
-        t2.setPositionGlobal(new Vector3D(mtApplication.width - 65, 30, 0));
+        t2.setPositionGlobal(new Vector3D(mtApplication.width - 200, 30, 0));
         uiLayer.addChild(t2);
         this.updateScores();
 
@@ -183,17 +190,53 @@ public class AirHockeyScene extends AbstractScene {
 
     private void createGoals(MTApplication mtApplication) {
         //Create the GOALS
-        HockeyGoal goal1 = new HockeyGoal(new Vector3D(0, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        HockeyGoal goal1 = new HockeyGoal(new Vector3D(0, 0), mtApplication.height / 3f, 50, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
         goal1.setName("goal1");
         goal1.setFillColor(new MTColor(0, 0, 255));
         goal1.setStrokeColor(new MTColor(0, 0, 255));
         physicsContainer.addChild(goal1);
 
-        HockeyGoal goal2 = new HockeyGoal(new Vector3D(mtApplication.width, mtApplication.height / 2f), 50, mtApplication.height / 4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        HockeyGoal goal1_2 = new HockeyGoal(new Vector3D(0, 0), 50, mtApplication.height / 3f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal1_2.setName("goal1");
+        goal1_2.setFillColor(new MTColor(0, 0, 255));
+        goal1_2.setStrokeColor(new MTColor(0, 0, 255));
+        physicsContainer.addChild(goal1_2);
+
+        HockeyGoal goal1_3 = new HockeyGoal(new Vector3D(0, mtApplication.height), mtApplication.height / 3f, 50, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal1_3.setName("goal1");
+        goal1_3.setFillColor(new MTColor(0, 0, 255));
+        goal1_3.setStrokeColor(new MTColor(0, 0, 255));
+        physicsContainer.addChild(goal1_3);
+
+        HockeyGoal goal1_4 = new HockeyGoal(new Vector3D(0, mtApplication.height), 50, mtApplication.height / 3f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal1_4.setName("goal1");
+        goal1_4.setFillColor(new MTColor(0, 0, 255));
+        goal1_4.setStrokeColor(new MTColor(0, 0, 255));
+        physicsContainer.addChild(goal1_4);
+
+        HockeyGoal goal2 = new HockeyGoal(new Vector3D(mtApplication.width, mtApplication.height), 50, mtApplication.height / 3f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
         goal2.setName("goal2");
         goal2.setFillColor(new MTColor(255, 0, 0));
         goal2.setStrokeColor(new MTColor(255, 0, 0));
         physicsContainer.addChild(goal2);
+
+        HockeyGoal goal2_2 = new HockeyGoal(new Vector3D(mtApplication.width, mtApplication.height), mtApplication.height / 3f, 50, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal2_2.setName("goal2");
+        goal2_2.setFillColor(new MTColor(255, 0, 0));
+        goal2_2.setStrokeColor(new MTColor(255, 0, 0));
+        physicsContainer.addChild(goal2_2);
+
+        HockeyGoal goal2_3 = new HockeyGoal(new Vector3D(mtApplication.width, 0), 50, mtApplication.height / 3f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal2_3.setName("goal2");
+        goal2_3.setFillColor(new MTColor(255, 0, 0));
+        goal2_3.setStrokeColor(new MTColor(255, 0, 0));
+        physicsContainer.addChild(goal2_3);
+
+        HockeyGoal goal2_4 = new HockeyGoal(new Vector3D(mtApplication.width, 0), mtApplication.height / 3f, 50, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        goal2_4.setName("goal2");
+        goal2_4.setFillColor(new MTColor(255, 0, 0));
+        goal2_4.setStrokeColor(new MTColor(255, 0, 0));
+        physicsContainer.addChild(goal2_4);
     }
 
     private void createBalls(MTApplication mtApplication) {
@@ -209,6 +252,17 @@ public class AirHockeyScene extends AbstractScene {
         ball.setName("ball");
         physicsContainer.addChild(ball);
         ball.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8), ToolsMath.getRandom(-8, 8)), ball.getBody().getWorldCenter());
+
+        ball2 = new HockeyBall(app, new Vector3D(mtApplication.width/2f, mtApplication.height/2f), 38, world, 0.5f, 0.005f, 0.70f, scale);
+//		MTColor ballCol = new MTColor(0,255,0);
+//		ball.setFillColor(ballCol);
+        ball2.setTexture(ballTex);
+//		ball.setFillColor(new MTColor(160,160,160,255));
+        ball2.setFillColor(new MTColor(255,255,255,255));
+        ball2.setNoStroke(true);
+        ball2.setName("ball");
+        physicsContainer.addChild(ball2);
+        ball2.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8),ToolsMath.getRandom(-8, 8)), ball2.getBody().getWorldCenter());
     }
 
     private void createPaddles(MTApplication mtApplication) {
@@ -222,6 +276,14 @@ public class AirHockeyScene extends AbstractScene {
         redCircle.setPickable(false);
         physicsContainer.addChild(redCircle);
 
+        redCircle2 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height/2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        redCircle2.setTexture(paddleTex);
+        redCircle2.setFillColor(new MTColor(255,50,50));
+        redCircle2.setNoStroke(true);
+        redCircle2.setName("red2");
+        redCircle2.setPickable(false);
+        physicsContainer.addChild(redCircle2);
+
         blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
         blueCircle.setTexture(paddleTex);
         blueCircle.setFillColor(new MTColor(50, 50, 255));
@@ -229,6 +291,31 @@ public class AirHockeyScene extends AbstractScene {
         blueCircle.setName("blue");
         blueCircle.setPickable(false);
         physicsContainer.addChild(blueCircle);
+
+        blueCircle2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        blueCircle2.setTexture(paddleTex);
+        blueCircle2.setFillColor(new MTColor(50, 50, 255));
+        blueCircle2.setNoStroke(true);
+        blueCircle2.setName("blue");
+        blueCircle2.setPickable(false);
+        physicsContainer.addChild(blueCircle2);
+    }
+
+    private void createBumpers(MTApplication mtApplication) {
+
+        /* bumperRed = new Bumper(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        bumperRed.setFillColor(new MTColor(255, 50, 50));
+        bumperRed.setNoStroke(true);
+        bumperRed.setName("bumper");
+        physicsContainer.addChild(bumperRed);
+
+
+        bumperBlue = new Bumper(new Vector3D(0, mtApplication.height/2f), 50, mtApplication.height/4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
+        bumperBlue.setFillColor(new MTColor(50, 50, 255));
+        bumperBlue.setNoStroke(true);
+        bumperBlue.setName("bumper");
+        physicsContainer.addChild(bumperBlue); */
+
     }
 
 
@@ -314,6 +401,31 @@ public class AirHockeyScene extends AbstractScene {
             def.fixedRotation = true;
             def.linearDamping = 0.5f;
         }
+    }
+
+  private class Bumper extends PhysicsEllipse {
+            public Bumper(PApplet applet, Vector3D centerPoint, float radius,
+                          World world, float density, float friction, float restitution, float worldScale) {
+                super(applet, centerPoint, radius, world, density, friction, restitution, worldScale);
+            }
+
+      @Override
+      protected void circleDefB4CreationCallback(CircleDef def) {
+          super.circleDefB4CreationCallback(def);
+          def.radius = def.radius - 5 / scale;
+      }
+
+      @Override
+      protected void bodyDefB4CreationCallback(BodyDef def) {
+          super.bodyDefB4CreationCallback(def);
+//			def.linearDamping = 0.15f;
+          def.linearDamping = 0.25f;
+          def.isBullet = false;
+          def.angularDamping = 0.9f;
+
+//			def.fixedRotation = true;
+      }
+
     }
 
     private class HockeyBall extends PhysicsCircle {
