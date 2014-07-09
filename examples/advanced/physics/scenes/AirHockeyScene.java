@@ -213,7 +213,7 @@ public class AirHockeyScene extends AbstractScene {
     private void createBumpers(MTApplication mtApplication) {
 
         PImage ballTex = mtApplication.loadImage(imagesPath + "blocker.jpg");
-        bumperRed = new Bumper(app, new Vector3D(90, mtApplication.height / 2f), 70, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
+        bumperRed = new Bumper(app, new Vector3D(20, mtApplication.height / 2f), 40, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
         bumperRed.setTexture(ballTex);
         bumperRed.setFillColor(new MTColor(50, 50, 250));
         bumperRed.setNoStroke(true);
@@ -221,7 +221,7 @@ public class AirHockeyScene extends AbstractScene {
         physicsContainer.addChild(bumperRed);
 
 
-        bumperBlue = new Bumper(app, new Vector3D(mtApplication.width - 80, mtApplication.height / 2f), 70, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
+        bumperBlue = new Bumper(app, new Vector3D(mtApplication.width - 20, mtApplication.height / 2f), 40, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
         bumperBlue.setTexture(ballTex);
         bumperBlue.setFillColor(new MTColor(255, 50, 50));
         bumperBlue.setNoStroke(true);
@@ -478,6 +478,7 @@ public class AirHockeyScene extends AbstractScene {
     @Override
     public void init() {
         this.getMTApplication().registerKeyEvent(this);
+//        this.getMTApplication().width =
     }
 
     @Override
