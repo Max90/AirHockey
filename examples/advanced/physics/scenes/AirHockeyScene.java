@@ -1,8 +1,11 @@
 package advanced.physics.scenes;
 
-import java.awt.event.KeyEvent;
-
+import advanced.physics.physicsShapes.IPhysicsComponent;
+import advanced.physics.physicsShapes.PhysicsCircle;
 import advanced.physics.physicsShapes.PhysicsEllipse;
+import advanced.physics.physicsShapes.PhysicsRectangle;
+import advanced.physics.util.PhysicsHelper;
+import advanced.physics.util.UpdatePhysicsAction;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.shapes.CircleDef;
 import org.jbox2d.collision.shapes.PolygonDef;
@@ -23,26 +26,20 @@ import org.mt4j.components.visibleComponents.font.FontManager;
 import org.mt4j.components.visibleComponents.font.IFont;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
 import org.mt4j.components.visibleComponents.shapes.MTLine;
-import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;
 import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.camera.MTCamera;
 import org.mt4j.util.math.ToolsMath;
 import org.mt4j.util.math.Vector3D;
-
 import processing.core.PApplet;
 import processing.core.PImage;
-import advanced.physics.physicsShapes.IPhysicsComponent;
-import advanced.physics.physicsShapes.PhysicsCircle;
-import advanced.physics.physicsShapes.PhysicsRectangle;
-import advanced.physics.util.PhysicsHelper;
-import advanced.physics.util.UpdatePhysicsAction;
+
+import java.awt.event.KeyEvent;
 
 public class AirHockeyScene extends AbstractScene {
     private float timeStep = 1.0f / 60.0f;
@@ -136,32 +133,6 @@ public class AirHockeyScene extends AbstractScene {
         createGoals(mtApplication);
         createBumpers(mtApplication);
 
-
-        //Make two components for both game field sides to drag the puks upon
-        MTRectangle leftSide = new MTRectangle(
-                PhysicsHelper.scaleDown(0, scale), PhysicsHelper.scaleDown(0, scale),
-                PhysicsHelper.scaleDown(app.width / 2f, scale), PhysicsHelper.scaleDown(app.height, scale)
-                , app);
-        leftSide.setName("left side");
-        leftSide.setNoFill(true); //Make it invisible -> only used for dragging
-        leftSide.setNoStroke(true);
-        leftSide.unregisterAllInputProcessors();
-        leftSide.removeAllGestureEventListeners(DragProcessor.class);
-        leftSide.registerInputProcessor(new DragProcessor(app));
-        leftSide.addGestureListener(DragProcessor.class, new GameFieldHalfDragListener(blueCircle));
-        physicsContainer.addChild(0, leftSide);
-        MTRectangle rightSide = new MTRectangle(
-                PhysicsHelper.scaleDown(app.width / 2f, scale), PhysicsHelper.scaleDown(0, scale),
-                PhysicsHelper.scaleDown(app.width, scale), PhysicsHelper.scaleDown(app.height, scale)
-                , app);
-        rightSide.setName("right Side");
-        rightSide.setNoFill(true); //Make it invisible -> only used for dragging
-        rightSide.setNoStroke(true);
-        rightSide.unregisterAllInputProcessors();
-        rightSide.removeAllGestureEventListeners(DragProcessor.class);
-        rightSide.registerInputProcessor(new DragProcessor(app));
-        rightSide.addGestureListener(DragProcessor.class, new GameFieldHalfDragListener(redCircle));
-        physicsContainer.addChild(0, rightSide);
 
         //Display Score UI
         MTComponent uiLayer = new MTComponent(mtApplication, new MTCamera(mtApplication));
@@ -268,37 +239,59 @@ public class AirHockeyScene extends AbstractScene {
     private void createPaddles(MTApplication mtApplication) {
         //Create the paddles
         PImage paddleTex = mtApplication.loadImage(imagesPath + "paddle.png");
-        redCircle = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        redCircle.setTexture(paddleTex);
-        redCircle.setFillColor(new MTColor(255, 50, 50));
-        redCircle.setNoStroke(true);
-        redCircle.setName("red");
-        redCircle.setPickable(false);
-        physicsContainer.addChild(redCircle);
 
-        redCircle2 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height/2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        redCircle2.setTexture(paddleTex);
-        redCircle2.setFillColor(new MTColor(255,50,50));
-        redCircle2.setNoStroke(true);
-        redCircle2.setName("red2");
-        redCircle2.setPickable(false);
-        physicsContainer.addChild(redCircle2);
+        PhysicsCircle paddleRed1 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        paddleRed1.setFillColor(new MTColor(255, 50, 50));
+        paddleRed1.setTexture(paddleTex);
+        paddleRed1.setNoStroke(true);
+        PhysicsHelper.addDragJoint(world, paddleRed1, paddleRed1.getBody().isDynamic(), scale);
+        physicsContainer.addChild(paddleRed1);
 
-        blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        blueCircle.setTexture(paddleTex);
-        blueCircle.setFillColor(new MTColor(50, 50, 255));
-        blueCircle.setNoStroke(true);
-        blueCircle.setName("blue");
-        blueCircle.setPickable(false);
-        physicsContainer.addChild(blueCircle);
+        PhysicsCircle paddleRed2 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        paddleRed2.setFillColor(new MTColor(255, 50, 50));
+        paddleRed2.setTexture(paddleTex);
+        paddleRed2.setNoStroke(true);
+        PhysicsHelper.addDragJoint(world, paddleRed2, paddleRed2.getBody().isDynamic(), scale);
+        physicsContainer.addChild(paddleRed2);
 
-        blueCircle2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        blueCircle2.setTexture(paddleTex);
-        blueCircle2.setFillColor(new MTColor(50, 50, 255));
-        blueCircle2.setNoStroke(true);
-        blueCircle2.setName("blue");
-        blueCircle2.setPickable(false);
-        physicsContainer.addChild(blueCircle2);
+        PhysicsCircle paddleBlue1 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        paddleBlue1.setFillColor(new MTColor(50, 50, 250));
+        paddleBlue1.setTexture(paddleTex);
+        paddleBlue1.setNoStroke(true);
+        PhysicsHelper.addDragJoint(world, paddleBlue1, paddleBlue1.getBody().isDynamic(), scale);
+        physicsContainer.addChild(paddleBlue1);
+
+        PhysicsCircle paddleBlue2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+        paddleBlue2.setFillColor(new MTColor(50, 50, 250));
+        paddleBlue2.setTexture(paddleTex);
+        paddleBlue2.setNoStroke(true);
+        PhysicsHelper.addDragJoint(world, paddleBlue2, paddleBlue2.getBody().isDynamic(), scale);
+        physicsContainer.addChild(paddleBlue2);
+
+
+//        redCircle2 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height/2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+//        redCircle2.setTexture(paddleTex);
+//        redCircle2.setFillColor(new MTColor(255,50,50));
+//        redCircle2.setNoStroke(true);
+//        redCircle2.setName("red2");
+//        redCircle2.setPickable(false);
+//        physicsContainer.addChild(redCircle2);
+
+//        blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+//        blueCircle.setTexture(paddleTex);
+//        blueCircle.setFillColor(new MTColor(50, 50, 255));
+//        blueCircle.setNoStroke(true);
+//        blueCircle.setName("blue");
+//        blueCircle.setPickable(false);
+//        physicsContainer.addChild(blueCircle);
+//
+//        blueCircle2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
+//        blueCircle2.setTexture(paddleTex);
+//        blueCircle2.setFillColor(new MTColor(50, 50, 255));
+//        blueCircle2.setNoStroke(true);
+//        blueCircle2.setName("blue2");
+//        blueCircle2.setPickable(false);
+//        physicsContainer.addChild(blueCircle2);
     }
 
     private void createBumpers(MTApplication mtApplication) {
