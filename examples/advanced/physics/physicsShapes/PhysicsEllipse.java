@@ -11,10 +11,9 @@ import org.mt4j.components.visibleComponents.shapes.MTEllipse;
 import org.mt4j.input.inputProcessors.componentProcessors.rotateProcessor.RotateProcessor;
 import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
 import org.mt4j.util.math.Vector3D;
-
 import processing.core.PApplet;
 
-public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
+public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent {
     private float angle;
 
     private World world;
@@ -27,10 +26,10 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
 
 
     public PhysicsEllipse(PApplet applet, Vector3D centerPoint, float radius,
-                         World world, float density, float friction, float restitution, float worldScale
+                          World world, float density, float friction, float restitution, float worldScale
     ) {
         //super(applet, centerPoint, radius/(float)worldScale, radius/(float)worldScale);
-        super(applet, centerPoint, radius/(float)worldScale, radius/(float)worldScale);
+        super(applet, centerPoint, radius / (float) worldScale, radius / (float) worldScale);
         this.angle = 0;
         this.world = world;
         this.density = density;
@@ -43,7 +42,7 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
         this.setGestureAllowance(RotateProcessor.class, false);
 
         BodyDef dymBodyDef = new BodyDef();
-        dymBodyDef.position = new Vec2(centerPoint.x /(float)worldScale, centerPoint.y /(float)worldScale);
+        dymBodyDef.position = new Vec2(centerPoint.x / (float) worldScale, centerPoint.y / (float) worldScale);
         this.bodyDefB4CreationCallback(dymBodyDef);
         this.body = this.world.createBody(dymBodyDef);
 
@@ -51,26 +50,17 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
 //		circleDef.radius = radius/(float)worldScale; 
         //FIXME HACK so textured circles really connect to other bodies
 //		circleDef.radius = radius/(float)worldScale - 2/(float)worldScale; 
-        circleDef.radius = radius/(float)worldScale;
-        if (density != 0.0f){
-            circleDef.density 		= density;
-            circleDef.friction 		= friction;
-            circleDef.restitution 	= restituion;
+        circleDef.radius = radius / (float) worldScale;
+        if (density != 0.0f) {
+            circleDef.density = density;
+            circleDef.friction = friction;
+            circleDef.restitution = restituion;
         }
         this.circleDefB4CreationCallback(circleDef);
         this.body.createShape(circleDef);
         this.body.setMassFromShapes();
         //FIXME TEST
         //theBody.setBullet(true);
-
-//		PhysicsSphere sphere = new PhysicsSphere(app, "sphere", 30,30, radius/scale, TextureMode.Projected);
-//		sphere.setFillColor(new MTColor(255, 255, 0, 255));
-//		sphere.setPositionGlobal(pos);
-//		theBody.setUserData(sphere);
-//		sphere.setUserData("box2d", theBody); 
-//		sphere.setMaterial(this.getMaterial());
-//		sphere.rotateY(sphere.getCenterPointRelativeToParent(), 90);
-//		sphere.rotateX(sphere.getCenterPointRelativeToParent(), 180);
 
         this.setPositionGlobal(scaledPos);
         body.setUserData(this);
@@ -80,11 +70,11 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
     }
 
 
-    protected void circleDefB4CreationCallback(CircleDef def){
+    protected void circleDefB4CreationCallback(CircleDef def) {
 
     }
 
-    protected void bodyDefB4CreationCallback(BodyDef def){
+    protected void bodyDefB4CreationCallback(BodyDef def) {
 
     }
 
@@ -99,10 +89,10 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
         return angle;
     }
 
-    public void setCenterRotation(float angle){
+    public void setCenterRotation(float angle) {
         float degreeAngle = MTApplication.degrees(angle);
         float oldAngle = this.getAngle();
-        float diff = degreeAngle-oldAngle;
+        float diff = degreeAngle - oldAngle;
         //System.out.println("Old angle: " + oldAngle + " new angle:" + degreeAngle + " diff->" +  diff);
         this.rotateZGlobal(this.getCenterPointGlobal(), diff);
     }
@@ -110,8 +100,8 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
     //@Override
     protected void destroyComponent() {
         Object o = this.getUserData("box2d");
-        if (o != null && o instanceof Body){
-            Body box2dBody = (Body)o;
+        if (o != null && o instanceof Body) {
+            Body box2dBody = (Body) o;
             boolean exists = false;
             for (Body body = world.getBodyList(); body != null; body = body.getNext()) {
                 if (body.equals(this.body))
@@ -124,11 +114,9 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
     }
 
 
-
     public World getWorld() {
         return world;
     }
-
 
 
     public Body getBody() {
@@ -136,11 +124,9 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
     }
 
 
-
     public float getDensity() {
         return density;
     }
-
 
 
     public float getFriction() {
@@ -148,11 +134,9 @@ public class PhysicsEllipse extends MTEllipse implements IPhysicsComponent{
     }
 
 
-
     public float getRestituion() {
         return restituion;
     }
-
 
 
 }

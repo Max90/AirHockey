@@ -49,11 +49,14 @@ public class AirHockeyScene extends AbstractScene {
     private MTComponent physicsContainer;
     private MTTextArea t1;
     private MTTextArea t2;
+    private int[] vertices = {0, 20, 40};
 
     private int scorePlayer1;
     private int scorePlayer2;
     private HockeyBall ball;
     private HockeyBall ball2;
+    private Bumper bumperRed;
+    private Bumper bumperBlue;
 
     private String imagesPath = "advanced" + MTApplication.separator + "physics" + MTApplication.separator + "data" + MTApplication.separator + "images" + MTApplication.separator;
 
@@ -205,47 +208,25 @@ public class AirHockeyScene extends AbstractScene {
         paddleBlue2.setNoStroke(true);
         PhysicsHelper.addDragJoint(world, paddleBlue2, paddleBlue2.getBody().isDynamic(), scale);
         physicsContainer.addChild(paddleBlue2);
-
-
-//        redCircle2 = new Paddle(app, new Vector3D(mtApplication.width - 60, mtApplication.height/2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-//        redCircle2.setTexture(paddleTex);
-//        redCircle2.setFillColor(new MTColor(255,50,50));
-//        redCircle2.setNoStroke(true);
-//        redCircle2.setName("red2");
-//        redCircle2.setPickable(false);
-//        physicsContainer.addChild(redCircle2);
-
-//        blueCircle = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-//        blueCircle.setTexture(paddleTex);
-//        blueCircle.setFillColor(new MTColor(50, 50, 255));
-//        blueCircle.setNoStroke(true);
-//        blueCircle.setName("blue");
-//        blueCircle.setPickable(false);
-//        physicsContainer.addChild(blueCircle);
-//
-//        blueCircle2 = new Paddle(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-//        blueCircle2.setTexture(paddleTex);
-//        blueCircle2.setFillColor(new MTColor(50, 50, 255));
-//        blueCircle2.setNoStroke(true);
-//        blueCircle2.setName("blue2");
-//        blueCircle2.setPickable(false);
-//        physicsContainer.addChild(blueCircle2);
     }
 
     private void createBumpers(MTApplication mtApplication) {
 
-        /* bumperRed = new Bumper(app, new Vector3D(80, mtApplication.height / 2f), 50, world, 1.0f, 0.3f, 0.4f, scale);
-        bumperRed.setFillColor(new MTColor(255, 50, 50));
+        PImage ballTex = mtApplication.loadImage(imagesPath + "blocker.jpg");
+        bumperRed = new Bumper(app, new Vector3D(90, mtApplication.height / 2f), 70, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
+        bumperRed.setTexture(ballTex);
+        bumperRed.setFillColor(new MTColor(50, 50, 250));
         bumperRed.setNoStroke(true);
         bumperRed.setName("bumper");
         physicsContainer.addChild(bumperRed);
 
 
-        bumperBlue = new Bumper(new Vector3D(0, mtApplication.height/2f), 50, mtApplication.height/4f, mtApplication, world, 0.0f, 0.1f, 0.0f, scale);
-        bumperBlue.setFillColor(new MTColor(50, 50, 255));
+        bumperBlue = new Bumper(app, new Vector3D(mtApplication.width - 80, mtApplication.height / 2f), 70, world, 99999999.9f, 99999999999999.9f, 0.0f, scale);
+        bumperBlue.setTexture(ballTex);
+        bumperBlue.setFillColor(new MTColor(255, 50, 50));
         bumperBlue.setNoStroke(true);
         bumperBlue.setName("bumper");
-        physicsContainer.addChild(bumperBlue); */
+        physicsContainer.addChild(bumperBlue);
 
     }
 
@@ -313,7 +294,6 @@ public class AirHockeyScene extends AbstractScene {
         }
     }
 
-
     private class HockeyGoal extends PhysicsRectangle {
         public HockeyGoal(Vector3D centerPosition, float width, float height,
                           PApplet applet, World world, float density, float friction, float restitution, float scale) {
@@ -332,7 +312,6 @@ public class AirHockeyScene extends AbstractScene {
             def.isSensor = true; //THIS AS SENSOR!
         }
     }
-
 
     private void addWorldContactListener(World world) {
         world.setContactListener(new ContactListener() {
@@ -381,6 +360,14 @@ public class AirHockeyScene extends AbstractScene {
                             border = comp1;
                         } else if (comp2.getName() != null && comp2.getName().startsWith("border")) {
                             border = comp2;
+                        }
+
+                        //Check if bumper was hit
+                        MTComponent bumper = null;
+                        if (comp1.getName() != null && comp1.getName().startsWith("bumper")) {
+                            bumper = comp1;
+                        } else if (comp2.getName() != null && comp2.getName().startsWith("bumper")) {
+                            bumper = comp2;
                         }
 
                         if (ball != null) {
