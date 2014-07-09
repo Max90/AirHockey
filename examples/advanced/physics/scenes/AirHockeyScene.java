@@ -17,9 +17,6 @@ import org.jbox2d.dynamics.ContactListener;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.ContactPoint;
 import org.jbox2d.dynamics.contacts.ContactResult;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.dynamics.joints.JointType;
-import org.jbox2d.dynamics.joints.MouseJoint;
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.font.FontManager;
@@ -27,9 +24,6 @@ import org.mt4j.components.visibleComponents.font.IFont;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
 import org.mt4j.components.visibleComponents.shapes.MTLine;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
-import org.mt4j.input.inputProcessors.IGestureEventListener;
-import org.mt4j.input.inputProcessors.MTGestureEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.globalProcessors.CursorTracer;
 import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
@@ -60,14 +54,6 @@ public class AirHockeyScene extends AbstractScene {
     private int scorePlayer2;
     private HockeyBall ball;
     private HockeyBall ball2;
-    private Paddle redCircle;
-    private Paddle blueCircle;
-    private Paddle redCircle2;
-    private Paddle blueCircle2;
-    private Bumper bumperRed;
-    private Bumper bumperBlue;
-
-    private boolean enableSound = true;
 
     private String imagesPath = "advanced" + MTApplication.separator + "physics" + MTApplication.separator + "data" + MTApplication.separator + "images" + MTApplication.separator;
 
@@ -103,57 +89,9 @@ public class AirHockeyScene extends AbstractScene {
 
         //Create borders around the screen
         this.createScreenBorders(physicsContainer);
+        GenerateField(mtApplication);
+        setScoreUi(mtApplication);
 
-        //Create gamefield marks
-        MTLine line = new MTLine(mtApplication, mtApplication.width / 2f / scale, 0, mtApplication.width / 2f / scale, mtApplication.height / scale);
-        line.setPickable(false);
-//		line.setStrokeColor(new MTColor(0,0,0));
-        line.setStrokeColor(new MTColor(150, 150, 150));
-        line.setStrokeWeight(0.5f);
-        physicsContainer.addChild(line);
-
-        MTEllipse centerCircle = new MTEllipse(mtApplication, new Vector3D(mtApplication.width / 2f / scale, mtApplication.height / 2f / scale), 80 / scale, 80 / scale);
-        centerCircle.setPickable(false);
-        centerCircle.setNoFill(true);
-//		centerCircle.setStrokeColor(new MTColor(0,0,0));
-        centerCircle.setStrokeColor(new MTColor(150, 150, 150));
-        centerCircle.setStrokeWeight(0.5f);
-        physicsContainer.addChild(centerCircle);
-
-        MTEllipse centerCircleInner = new MTEllipse(mtApplication, new Vector3D(mtApplication.width / 2f / scale, mtApplication.height / 2f / scale), 10 / scale, 10 / scale);
-        centerCircleInner.setPickable(false);
-        centerCircleInner.setFillColor(new MTColor(160, 160, 160));
-//		centerCircleInner.setStrokeColor(new MTColor(150,150,150));
-//		centerCircleInner.setStrokeColor(new MTColor(0,0,0));
-        centerCircleInner.setStrokeColor(new MTColor(150, 150, 150));
-        centerCircleInner.setStrokeWeight(0.5f);
-        physicsContainer.addChild(centerCircleInner);
-        createPaddles(mtApplication);
-        createBalls(mtApplication);
-        createGoals(mtApplication);
-        createBumpers(mtApplication);
-
-
-        //Display Score UI
-        MTComponent uiLayer = new MTComponent(mtApplication, new MTCamera(mtApplication));
-        uiLayer.setDepthBufferDisabled(true);
-        getCanvas().addChild(uiLayer);
-        IFont font = FontManager.getInstance().createFont(mtApplication, "arial", 50, new MTColor(255, 255, 255), new MTColor(0, 0, 0));
-
-        t1 = new MTTextArea(mtApplication, font);
-        t1.setPickable(false);
-        t1.setNoFill(true);
-        t1.setNoStroke(true);
-        t1.setPositionGlobal(new Vector3D(200, 30, 0));
-        uiLayer.addChild(t1);
-
-        t2 = new MTTextArea(mtApplication, font);
-        t2.setPickable(false);
-        t2.setNoFill(true);
-        t2.setNoStroke(true);
-        t2.setPositionGlobal(new Vector3D(mtApplication.width - 200, 30, 0));
-        uiLayer.addChild(t2);
-        this.updateScores();
 
         //Set up check for collisions between objects
         this.addWorldContactListener(world);
@@ -224,16 +162,16 @@ public class AirHockeyScene extends AbstractScene {
         physicsContainer.addChild(ball);
         ball.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8), ToolsMath.getRandom(-8, 8)), ball.getBody().getWorldCenter());
 
-        ball2 = new HockeyBall(app, new Vector3D(mtApplication.width/2f, mtApplication.height/2f), 38, world, 0.5f, 0.005f, 0.70f, scale);
+        ball2 = new HockeyBall(app, new Vector3D(mtApplication.width / 2f, mtApplication.height / 2f), 38, world, 0.5f, 0.005f, 0.70f, scale);
 //		MTColor ballCol = new MTColor(0,255,0);
 //		ball.setFillColor(ballCol);
         ball2.setTexture(ballTex);
 //		ball.setFillColor(new MTColor(160,160,160,255));
-        ball2.setFillColor(new MTColor(255,255,255,255));
+        ball2.setFillColor(new MTColor(255, 255, 255, 255));
         ball2.setNoStroke(true);
         ball2.setName("ball");
         physicsContainer.addChild(ball2);
-        ball2.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8),ToolsMath.getRandom(-8, 8)), ball2.getBody().getWorldCenter());
+        ball2.getBody().applyImpulse(new Vec2(ToolsMath.getRandom(-8f, 8), ToolsMath.getRandom(-8, 8)), ball2.getBody().getWorldCenter());
     }
 
     private void createPaddles(MTApplication mtApplication) {
@@ -312,76 +250,6 @@ public class AirHockeyScene extends AbstractScene {
     }
 
 
-    private class GameFieldHalfDragListener implements IGestureEventListener {
-        private MTComponent comp;
-
-        public GameFieldHalfDragListener(MTComponent dragComp) {
-            this.comp = dragComp;
-            if (comp.getUserData("box2d") == null) {
-                throw new RuntimeException("GameFieldHalfDragListener has to be given a physics object!");
-            }
-        }
-
-        public boolean processGestureEvent(MTGestureEvent ge) {
-            DragEvent de = (DragEvent) ge;
-            try {
-                Body body = (Body) comp.getUserData("box2d");
-                MouseJoint mouseJoint;
-                Vector3D to = new Vector3D(de.getTo());
-                //Un-scale position from mt4j to box2d
-                PhysicsHelper.scaleDown(to, scale);
-                switch (de.getId()) {
-                    case DragEvent.GESTURE_DETECTED:
-                        comp.sendToFront();
-                        body.wakeUp();
-                        body.setXForm(new Vec2(to.x, to.y), body.getAngle());
-                        mouseJoint = PhysicsHelper.createDragJoint(world, body, to.x, to.y);
-                        comp.setUserData(comp.getID(), mouseJoint);
-                        break;
-                    case DragEvent.GESTURE_UPDATED:
-                        mouseJoint = (MouseJoint) comp.getUserData(comp.getID());
-                        if (mouseJoint != null) {
-                            boolean onCorrectGameSide = ((MTComponent) de.getTargetComponent()).containsPointGlobal(de.getTo());
-                            //System.out.println(((MTComponent)de.getTargetComponent()).getName()  + " Contains  " + to + " -> " + contains);
-                            if (onCorrectGameSide) {
-                                mouseJoint.setTarget(new Vec2(to.x, to.y));
-                            }
-                        }
-                        break;
-                    case DragEvent.GESTURE_ENDED:
-                        mouseJoint = (MouseJoint) comp.getUserData(comp.getID());
-                        if (mouseJoint != null) {
-                            comp.setUserData(comp.getID(), null);
-                            //Only destroy the joint if it isnt already (go through joint list and check)
-                            for (Joint joint = world.getJointList(); joint != null; joint = joint.getNext()) {
-                                JointType type = joint.getType();
-                                switch (type) {
-                                    case MOUSE_JOINT:
-                                        MouseJoint mj = (MouseJoint) joint;
-                                        if (body.equals(mj.getBody1()) || body.equals(mj.getBody2())) {
-                                            if (mj.equals(mouseJoint)) {
-                                                world.destroyJoint(mj);
-                                            }
-                                        }
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                        mouseJoint = null;
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
-            return false;
-        }
-    }
-
-
     private class Paddle extends PhysicsCircle {
         public Paddle(PApplet applet, Vector3D centerPoint, float radius,
                       World world, float density, float friction, float restitution, float worldScale) {
@@ -396,28 +264,28 @@ public class AirHockeyScene extends AbstractScene {
         }
     }
 
-  private class Bumper extends PhysicsEllipse {
-            public Bumper(PApplet applet, Vector3D centerPoint, float radius,
-                          World world, float density, float friction, float restitution, float worldScale) {
-                super(applet, centerPoint, radius, world, density, friction, restitution, worldScale);
-            }
+    private class Bumper extends PhysicsEllipse {
+        public Bumper(PApplet applet, Vector3D centerPoint, float radius,
+                      World world, float density, float friction, float restitution, float worldScale) {
+            super(applet, centerPoint, radius, world, density, friction, restitution, worldScale);
+        }
 
-      @Override
-      protected void circleDefB4CreationCallback(CircleDef def) {
-          super.circleDefB4CreationCallback(def);
-          def.radius = def.radius - 5 / scale;
-      }
+        @Override
+        protected void circleDefB4CreationCallback(CircleDef def) {
+            super.circleDefB4CreationCallback(def);
+            def.radius = def.radius - 5 / scale;
+        }
 
-      @Override
-      protected void bodyDefB4CreationCallback(BodyDef def) {
-          super.bodyDefB4CreationCallback(def);
+        @Override
+        protected void bodyDefB4CreationCallback(BodyDef def) {
+            super.bodyDefB4CreationCallback(def);
 //			def.linearDamping = 0.15f;
-          def.linearDamping = 0.25f;
-          def.isBullet = false;
-          def.angularDamping = 0.9f;
+            def.linearDamping = 0.25f;
+            def.isBullet = false;
+            def.angularDamping = 0.9f;
 
 //			def.fixedRotation = true;
-      }
+        }
 
     }
 
@@ -469,22 +337,18 @@ public class AirHockeyScene extends AbstractScene {
     private void addWorldContactListener(World world) {
         world.setContactListener(new ContactListener() {
             public void result(ContactResult point) {
-//				System.out.println("Result contact");
             }
 
             //@Override
             public void remove(ContactPoint point) {
-//				System.out.println("remove contact");
             }
 
             //@Override
             public void persist(ContactPoint point) {
-//				System.out.println("persist contact");
             }
 
             //@Override
             public void add(ContactPoint point) {
-//				/*
                 Shape shape1 = point.shape1;
                 Shape shape2 = point.shape2;
                 final Body body1 = shape1.getBody();
@@ -495,7 +359,6 @@ public class AirHockeyScene extends AbstractScene {
                 if (userData1 instanceof IPhysicsComponent && userData2 instanceof IPhysicsComponent) { //Check for ball/star collision
                     IPhysicsComponent physObj1 = (IPhysicsComponent) userData1;
                     IPhysicsComponent physObj2 = (IPhysicsComponent) userData2;
-//					System.out.println("Collided: " + mt4jObj1 + " with " + mt4jObj2);
                     if (physObj1 instanceof MTComponent && physObj2 instanceof MTComponent) {
                         MTComponent comp1 = (MTComponent) physObj1;
                         MTComponent comp2 = (MTComponent) physObj2;
@@ -523,7 +386,6 @@ public class AirHockeyScene extends AbstractScene {
                         if (ball != null) {
                             //CHECK IF BALL HIT A PADDLE
 
-
                             //Check if BALL HIT A GOAL
                             if (goal1 != null || goal2 != null) {
                                 //BALL HIT A GOAL
@@ -549,7 +411,6 @@ public class AirHockeyScene extends AbstractScene {
                                             public void run() {
                                                 IPhysicsComponent a = (IPhysicsComponent) theBall;
                                                 a.getBody().setXForm(new Vec2(getMTApplication().width / 2f / scale, getMTApplication().height / 2f / scale), a.getBody().getAngle());
-//											a.getBody().setLinearVelocity(new Vec2(0,0));
                                                 a.getBody().setLinearVelocity(new Vec2(ToolsMath.getRandom(-8, 8), ToolsMath.getRandom(-8, 8)));
                                                 a.getBody().setAngularVelocity(0);
                                                 theBall.setUserData("resetted", null);
@@ -559,19 +420,9 @@ public class AirHockeyScene extends AbstractScene {
                                 }
 
                             }
-
-                            //If ball hit border Play sound
-                            if (enableSound && border != null) {
-								/*
-								triggerSound(wallHit);
-								*/
-                            }
                         }
                     }
-                } else { //if at lest one if the colliding bodies' userdata is not a physics shape
-
                 }
-//				*/
             }
         });
     }
@@ -610,7 +461,6 @@ public class AirHockeyScene extends AbstractScene {
         this.updateScores();
     }
 
-
     private void createScreenBorders(MTComponent parent) {
         //Left border
         float borderWidth = 50f;
@@ -638,7 +488,6 @@ public class AirHockeyScene extends AbstractScene {
         parent.addChild(borderBottom);
     }
 
-
     @Override
     public void init() {
         this.getMTApplication().registerKeyEvent(this);
@@ -662,4 +511,51 @@ public class AirHockeyScene extends AbstractScene {
         }
     }
 
+    private void setScoreUi(MTApplication mtApplication) {
+        MTComponent uiLayer = new MTComponent(mtApplication, new MTCamera(mtApplication));
+        uiLayer.setDepthBufferDisabled(true);
+        getCanvas().addChild(uiLayer);
+        IFont font = FontManager.getInstance().createFont(mtApplication, "arial", 50, new MTColor(255, 255, 255), new MTColor(0, 0, 0));
+
+        t1 = new MTTextArea(mtApplication, font);
+        t1.setPickable(false);
+        t1.setNoFill(true);
+        t1.setNoStroke(true);
+        t1.setPositionGlobal(new Vector3D(200, 30, 0));
+        uiLayer.addChild(t1);
+
+        t2 = new MTTextArea(mtApplication, font);
+        t2.setPickable(false);
+        t2.setNoFill(true);
+        t2.setNoStroke(true);
+        t2.setPositionGlobal(new Vector3D(mtApplication.width - 200, 30, 0));
+        uiLayer.addChild(t2);
+        this.updateScores();
+    }
+
+    private void GenerateField(MTApplication mtApplication) {
+        MTLine line = new MTLine(mtApplication, mtApplication.width / 2f / scale, 0, mtApplication.width / 2f / scale, mtApplication.height / scale);
+        line.setPickable(false);
+        line.setStrokeColor(new MTColor(150, 150, 150));
+        line.setStrokeWeight(0.5f);
+        physicsContainer.addChild(line);
+
+        MTEllipse centerCircle = new MTEllipse(mtApplication, new Vector3D(mtApplication.width / 2f / scale, mtApplication.height / 2f / scale), 80 / scale, 80 / scale);
+        centerCircle.setPickable(false);
+        centerCircle.setNoFill(true);
+        centerCircle.setStrokeColor(new MTColor(150, 150, 150));
+        centerCircle.setStrokeWeight(0.5f);
+        physicsContainer.addChild(centerCircle);
+
+        MTEllipse centerCircleInner = new MTEllipse(mtApplication, new Vector3D(mtApplication.width / 2f / scale, mtApplication.height / 2f / scale), 10 / scale, 10 / scale);
+        centerCircleInner.setPickable(false);
+        centerCircleInner.setFillColor(new MTColor(160, 160, 160));
+        centerCircleInner.setStrokeColor(new MTColor(150, 150, 150));
+        centerCircleInner.setStrokeWeight(0.5f);
+        physicsContainer.addChild(centerCircleInner);
+        createPaddles(mtApplication);
+        createBalls(mtApplication);
+        createGoals(mtApplication);
+        createBumpers(mtApplication);
+    }
 }
